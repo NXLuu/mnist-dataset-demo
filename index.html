@@ -1,0 +1,502 @@
+﻿<html>
+
+<head>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"
+        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+    <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.2.0/chart.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans&display=swap" rel="stylesheet">
+    <style>
+        /* width */
+        button {
+            background-color: #4CAF50;
+            /* Green */
+            border: none;
+            color: white;
+            padding: 15px 15px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+        }
+        button:hover {
+            cursor: pointer;
+        }
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        /* Track */
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        /* Handle */
+        ::-webkit-scrollbar-thumb {
+            background: rgb(255, 0, 0);
+        }
+
+        /* Handle on hover */
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        body {
+            padding: 0px;
+            margin: 0px;
+            font-family: 'Josefin Sans', sans-serif;
+            color: white;
+        }
+
+        a:link,
+        a:visited,
+        a:hover,
+        a:active {
+            color: white;
+            text-decoration: underline;
+        }
+
+        body,
+        html {
+            height: 100%;
+            overflow-y: scroll;
+        }
+
+        html,
+        body {
+            padding: 0px;
+            margin: 0px;
+            background: #00000099;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            height: 100%;
+
+        }
+
+        .header {
+            background-color: rgba(0, 0, 0, 0.3);
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: large;
+            color: white;
+
+            text-align: center;
+            padding: 30px;
+        }
+
+        .footer {}
+
+        .info {
+            text-align: left;
+            color: gray;
+            width: 30%;
+            margin: auto;
+            padding: 20px;
+            font-size: 14px;
+        }
+
+
+        .content {
+            display: flex;
+            align-self: center;
+            justify-content: space-evenly
+        }
+
+        .upload_part {
+            background-color: rgb(0 0 0);
+            border-radius: 18px;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .upload_button {
+            background-color: #FEED06;
+            color: black;
+            padding: 15px;
+            font-size: 16px;
+            border: 0px;
+            border-radius: 5px;
+            -webkit-box-shadow: 6px 8px 18px -5px rgba(0, 0, 0, 0.38);
+            -moz-box-shadow: 6px 8px 18px -5px rgba(0, 0, 0, 0.38);
+            box-shadow: 6px 8px 18px -5px rgba(0, 0, 0, 0.38);
+            cursor: pointer;
+        }
+
+        .upload_hint {
+            margin: 10px;
+            font-size: 14px;
+            color: rgb(200, 200, 200);
+        }
+
+        .result_part {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .result_title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .result_id {
+            padding: 10px;
+            margin: 15px;
+            font-size: 16px;
+
+        }
+
+        .result_id_number {
+            margin: 15px;
+            padding: 10px;
+            padding-left: 15px;
+            padding-right: 15px;
+            background-color: #FEED06;
+            color: black;
+            font-weight: bold;
+            font-size: 18px;
+            border-radius: 5px;
+
+        }
+
+        #mycanvas {
+            margin-top: 40px;
+            max-width: 200px;
+            border-radius: 1rem;
+            background-color: rgb(0 0 0);
+            border-radius: 13px solid white;
+            margin-bottom: 30px;
+            box-shadow: rgb(0 0 0 / 75%) 0px 8px 24px, rgb(118 109 109 / 77%) 0px 16px 56px, rgb(151 151 151 / 61%) 0px 24px 80px;
+        }
+
+        #container-canvas {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            /* flex-grow: 1; */
+            border-radius: 5px;
+            /* border-right: 4px solid #f31a1a; */
+            /* border-bottom: 4px solid #f31a1a; */
+            box-shadow: #000000 0px 20px 30px -10px;
+        }
+
+        .controls {
+            padding: 30px;
+        }
+
+        .result_part {
+            display: flex;
+            justify-content: center;
+        }
+
+        .container-result {
+            border-radius: 5px;
+            /* border-right: 4px solid #f31a1a; */
+            /* border-bottom: 4px solid #f31a1a; */
+            box-shadow: #000000 0px 20px 30px -10px;
+            padding: 30px;
+        }
+
+        #display_image {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-height: 300px;
+            max-width: 300px;
+            display: block;
+            /* border-radius: 1rem; */
+
+        }
+
+        #result_info {
+            font-size: 70px;
+            text-shadow: 1px 12px 9px #d83f1054;
+        }
+    </style>
+</head>
+
+<body>
+    <div class='header'>
+        Hệ Thống nhận diện số viết tay
+    </div>
+
+
+    <div style="display: flex; justify-content: space-evenly; flex-wrap: wrap;">
+        <div class='content'>
+            <div id="container-canvas">
+                <div class='upload_part'>
+                    <button class='upload_button' id="upload_button">Chọn file ảnh hoa..</button>
+                    <div class='upload_hint' id='upload_hint'>
+                        Các định dạng được hỗ trợ: PNG, JPG và JPEG
+                    </div>
+                    <form action="/" method="POST" enctype="multipart/form-data" id='form'>
+                        <input type="file" name="file" id="fileinput" accept="image/*" style="display:none">
+                    </form>
+                </div>
+                <canvas id="myCanvas"></canvas>
+                <div class="controls">
+                    <button onclick="submit()">
+                        Dự doán 
+                    </button>
+                    <button onclick="javascript:clearArea();return false;" style="background:crimson; margin-left:20px;">Clear Area</button>
+                    <br>
+                    Line width : <select id="selWidth" style="margin-top: 30px; margin-right: 10px;">
+                        <option value="18" selected="selected">18</option>
+                    </select>
+                    Color : <select id="selColor">
+                        <option value="blue">blue</option>
+                        <option value="red">red</option>
+                        <option value="green">green</option>
+                        <option value="yellow">yellow</option>
+                        <option value="white" selected="selected">white</option>
+                    </select>
+                </div>
+            </div>
+
+
+
+
+        </div>
+
+        <div class='result_part'>
+            <div class="container-result">
+                <div class='result_title'><b>Kết quả nhận diện</b></div>
+                <div class='result_id' id="result_info">_</div>
+                <canvas id="myChart" width="400" height="400"></canvas>
+            </div>
+        </div>
+        <div style="border-radius: 1rem;
+            position: relative; align-self: center;
+            background: black;  width: 400px;
+            height: 400px;
+            box-shadow: rgba(184, 11, 11, 0.16) 0px 1px 4px, rgba(206, 1, 1, 0.651) 0px 0px 0px 3px;">
+            <img src="https://reactnativecode.com/wp-content/uploads/2018/02/Default_Image_Thumbnail.png"
+                alt="User Image" id="display_image">
+        </div>
+
+    </div>
+
+
+
+</body>
+<script>
+
+    var mousePressed = false;
+    var lastX, lastY;
+    var ctx;
+
+
+    canv = document.getElementById('myCanvas');
+    ctx = canv.getContext("2d");
+    canv.width = 200;
+    canv.height = 200;
+
+    $('#myCanvas').mousedown(function (e) {
+        mousePressed = true;
+        Draw(e.pageX - $(this).offset().left, e.pageY - $(this).offset().top, false);
+        // Draw(e.pageX, e.pageY, false);
+    });
+
+    $('#myCanvas').mousemove(function (e) {
+        if (mousePressed) {
+            Draw(e.pageX - $(this).offset().left, e.pageY - $(this).offset().top, true);
+            // Draw(e.pageX, e.pageY, true);
+        }
+    });
+
+    $('#myCanvas').mouseup(function (e) {
+        mousePressed = false;
+    });
+    $('#myCanvas').mouseleave(function (e) {
+        mousePressed = false;
+    });
+
+
+    function Draw(x, y, isDown) {
+        if (isDown) {
+            ctx.beginPath();
+            ctx.strokeStyle = $('#selColor').val();
+            ctx.lineWidth = $('#selWidth').val();
+            ctx.lineJoin = "round";
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(x, y);
+            ctx.closePath();
+            ctx.stroke();
+        }
+        lastX = x; lastY = y;
+    }
+
+    function clearArea() {
+        // Use the identity matrix while clearing the canvas
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    }
+
+    function submit() {
+        let dataURL = canv.toDataURL();
+        // console.log(data);
+        imEl = document.getElementById("display_image");
+        imEl.onload = function () {
+            let image = document.getElementById("display_image");
+            predict(image);
+        }
+        $("#display_image").attr("src", dataURL);
+    }
+
+    // Load model
+    $("document").ready(async function () {
+        model = await tf.loadLayersModel('./models/model.json');
+        console.log('Load model');
+        console.log(model.summary());
+    });
+
+    $("#upload_button").click(function () {
+        $("#fileinput").trigger('click');
+    });
+
+    async function predict(image) {
+
+        // 1. Chuyen anh ve tensor
+        // let image = document.getElementById("display_image");
+        let img = tf.browser.fromPixels(image);
+        console.log(img)
+        let normalizationOffset = tf.scalar(255 / 2); // 127.5
+        //  converted = tf.image.rgb_to_grayscale(img);
+        let tensor = img
+            .resizeNearestNeighbor([28, 28])
+            .toFloat()
+            .mean(2)
+            .expandDims(-1);
+        // 2. Predict
+        let predictions = await model.predict(tensor.reshape([-1, 28, 28, 1]));
+        predictions = predictions.dataSync();
+        console.log(predictions);
+
+        // 3. Hien thi len man hinh
+        let max = 0;
+        let maxi = 0;
+        let top5 = Array.from(predictions)
+            .map(function (p, i) {
+                if (max < p) {
+                    max = p;
+                    maxi = i;
+                }
+                return +p.toFixed(3);
+
+            });
+        console.log(maxi);
+        debugger
+        document.getElementById('result_info').innerHTML = maxi;
+        data2.datasets[0].data = top5;
+        myChart.update();
+        console.log(top5);
+    };
+
+
+
+    $("#fileinput").change(function () {
+        let reader = new FileReader();
+        reader.onload = function () {
+            let dataURL = reader.result;
+
+            imEl = document.getElementById("display_image");
+            imEl.onload = function () {
+
+                let image = document.getElementById("display_image");
+                predict(image);
+            }
+            $("#display_image").attr("src", dataURL);
+
+        }
+
+        let file = $("#fileinput").prop("files")[0];
+        reader.readAsDataURL(file);
+    });
+
+    const DATA_COUNT = 7;
+    const NUMBER_CFG = { count: DATA_COUNT, min: -100, max: 100 };
+
+    let data2 = {
+        labels: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+        datasets: [{
+            label: '# of Votes',
+            color: '#ffffff',
+            data: [1, 0, 0, 10, 4, 3, 0, 0, 0, 0],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    }
+    var ctx1 = document.getElementById('myChart').getContext('2d');
+    var myChart = new Chart(ctx1, {
+        type: 'bar',
+        data: data2,
+        options: {
+            indexAxis: 'y',
+            // Elements options apply to all of the options unless overridden in a dataset
+            // In this case, we are setting the border of each horizontal bar to be 2px wide
+            elements: {
+                bar: {
+                    borderWidth: 2,
+                }
+            },
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false,
+                    position: 'right',
+                },
+                title: {
+                    display: true,
+                    text: 'Kết quả dự đoán'
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        // For a category axis, the val is the index so the lookup via getLabelForValue is needed
+
+                        color: 'rgb(165 170 40 / 100%)',
+                    },
+                    grid: {
+                        color: "rgb(165 170 40 / 30%)"
+                    }
+                },
+                y: {
+                    ticks: {
+                        // For a category axis, the val is the index so the lookup via getLabelForValue is needed
+                        color: "rgb(165 170 40 / 100%)"
+                    },
+                    grid: {
+                        color: "rgb(165 170 40 / 30%)"
+                    }
+
+                }
+            }
+        },
+    }
+    );
+
+
+</script>
+
+</html>
