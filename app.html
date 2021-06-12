@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Hello OpenCV.js</title>
+</head>
+
+<body>
+    <h2>Hello OpenCV.js</h2>
+    <p id="status">OpenCV.js is loading...</p>
+    <div>
+        <div class="inputoutput">
+            <img id="imageSrc" alt="No Image" />
+            <div class="caption">imageSrc <input type="file" id="fileInput" name="file" /></div>
+        </div>
+        <div class="inputoutput">
+            <canvas id="canvasOutput"></canvas>
+            <div class="caption">canvasOutput</div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        let imgElement = document.getElementById('imageSrc');
+        let inputElement = document.getElementById('fileInput');
+        inputElement.addEventListener('change', (e) => {
+            imgElement.src = URL.createObjectURL(e.target.files[0]);
+        }, false);
+        imgElement.onload = function () {
+            let mat = cv.imread(imgElement);
+            let dsize = new cv.Size(28, 28);
+            let res = new cv.Mat();
+            let dst = new cv.Mat();
+            let blurred = new cv.Mat();
+            let ksize = new cv.Size(5, 5);
+            let canny = new cv.Mat();
+            let contours = new cv.MatVector();
+            let hierarchy = new cv.Mat();
+            cv.cvtColor(mat, dst, cv.COLOR_RGBA2GRAY, 0);
+            cv.GaussianBlur(dst, blurred, ksize, 0, 0, cv.BORDER_DEFAULT);
+            cv.Canny(blurred, canny, 30, 150, 3, false);
+            cv.findContours(canny, contours, hierarchy, cv.RETR_CCOMP, cv.CHAIN_APPROX_SIMPLE);
+            for (let i = 0; i < contours.size(); ++i) {
+                let cnt = contours.get(0);
+                let rect = cv.boundingRect(cnt);
+                let contoursColor = new cv.Scalar(255, 255, 255);
+                let rectangleColor = new cv.Scalar(255, 0, 0);
+                cv.drawContours(blurred, contours, 0, contoursColor, 1, 8, hierarchy, 100);
+                cv.resize(blurred, res, dsize, 0, 0, cv.INTER_AREA);
+            }
+            cv.imshow('canvasOutput', res);
+            mat.delete();
+        };
+        function onOpenCvReady() {
+        }
+    </script>
+    <script async src="opencv.js" onload="onOpenCvReady();" type="text/javascript"></script>
+</body>
+
+</html>

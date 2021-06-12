@@ -365,13 +365,13 @@
         // let image = document.getElementById("display_image");
         let img = tf.browser.fromPixels(image);
         console.log(img)
-        let normalizationOffset = tf.scalar(255 / 2); // 127.5
-        //  converted = tf.image.rgb_to_grayscale(img);
+      
         let tensor = img
             .resizeNearestNeighbor([28, 28])
             .toFloat()
             .mean(2)
             .expandDims(-1);
+            
         // 2. Predict
         let predictions = await model.predict(tensor.reshape([-1, 28, 28, 1]));
         predictions = predictions.dataSync();

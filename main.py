@@ -7,10 +7,9 @@ from keras.utils import np_utils
 from keras.datasets import mnist
 
 # 2. Load dữ liệu MNIST
-(X_train, y_train), (X_test, y_test) = mnist.load_data()
+((X_train, y_train), (X_test, y_test)) = mnist.load_data()
 X_val, y_val = X_train[50000:60000,:], y_train[50000:60000]
 X_train, y_train = X_train[:50000,:], y_train[:50000]
-print(X_train.shape)
 
 # 3. Reshape lại dữ liệu cho đúng kích thước mà keras yêu cầu
 X_train = X_train.reshape(X_train.shape[0], 28, 28, 1)
@@ -22,6 +21,8 @@ X_test = X_test.reshape(X_test.shape[0], 28, 28, 1)
 Y_train = np_utils.to_categorical(y_train, 10)
 Y_val = np_utils.to_categorical(y_val, 10)
 Y_test = np_utils.to_categorical(y_test, 10)
+
+
 print('Dữ liệu y ban đầu ', y_train[0])
 print('Dữ liệu y sau one-hot encoding ',Y_train[0])
 
@@ -49,9 +50,7 @@ model.add(Dense(10, activation='softmax'))
 
 # 6. Compile model, chỉ rõ hàm loss_function nào được sử dụng, phương thức
 # đùng để tối ưu hàm loss function.
-model.compile(loss='categorical_crossentropy',
-              optimizer='adam',
-              metrics=['accuracy'])
+model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
 
 # 7. Thực hiện train model với data
@@ -71,11 +70,4 @@ plt.ylabel('Loss|Accuracy')
 plt.legend()
 
 
-# 9. Đánh giá model với dữ liệu test set
-score = model.evaluate(X_test, Y_test, verbose=0)
-print(score)
-print(X_test[0]);
-y_predict = model.predict(X_test[0].reshape(1,28,28,1))
-print('Giá trị dự đoán: ', np.argmax(y_predict))
-
-plt.show()
+# 9. Đánh giá model với dữ liệu test set score = model.evaluate(X_test, Y_test, verbose=0) print(score) print(X_test[0]); y_predict = model.predict(X_test[0].reshape(1,28,28,1)) print('Giá trị dự đoán: ', np.argmax(y_predict)) plt.show()
