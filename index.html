@@ -9,6 +9,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans&display=swap" rel="stylesheet">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
         /* width */
         button {
@@ -22,9 +24,11 @@
             display: inline-block;
             font-size: 16px;
         }
+
         button:hover {
             cursor: pointer;
         }
+
         ::-webkit-scrollbar {
             width: 4px;
         }
@@ -217,6 +221,23 @@
             font-size: 70px;
             text-shadow: 1px 12px 9px #d83f1054;
         }
+
+        .present {
+            padding: 40px;
+            font-size: 1.2rem;
+        }
+
+        .paragaph {
+            border-bottom: 1px solid red;
+            padding-bottom: 20px;
+        }
+
+        .paragaph img {
+            margin: 0;
+            max-width: 1000px;
+            display: block;
+            margin: 0 auto;
+        }
     </style>
 </head>
 
@@ -241,9 +262,10 @@
                 <canvas id="myCanvas"></canvas>
                 <div class="controls">
                     <button onclick="submit()">
-                        Dự doán 
+                        Dự doán
                     </button>
-                    <button onclick="javascript:clearArea();return false;" style="background:crimson; margin-left:20px;">Clear Area</button>
+                    <button onclick="javascript:clearArea();return false;"
+                        style="background:crimson; margin-left:20px;">Clear Area</button>
                     <br>
                     Line width : <select id="selWidth" style="margin-top: 30px; margin-right: 10px;">
                         <option value="18" selected="selected">18</option>
@@ -281,6 +303,71 @@
 
     </div>
 
+    <div class="present">
+        <div class="paragaph">
+            <h1 class="title">
+                Bài toán
+            </h1>
+            <p>
+                Bài toán phân loại ảnh giúp nhận diện chữ số viết tay. Đầu vào là bức ảnh xám có kích thước 28*28 của
+                các chữ số từ 0 đến 9.
+            </p>
+        </div>
+        <div class="paragaph">
+            <h1 class="title">
+                MNIST Dataset
+            </h1>
+            <p>
+                Training set gồm 60.000 ảnh các chữ số viết tay và test set gồm 10.000 ảnh các chữ số.
+            </p>
+            <img src="./img/MnistExamples.png" alt="">
+        </div>
+        <div class="paragaph">
+            <h1 class="title">
+                Model
+            </h1>
+            <img src="./img/Untitled.jpg" alt="">
+        </div>
+        <div class="paragaph">
+            <h1 class="title">
+                Loss function
+            </h1>
+            <div style="font-size: 2rem;">
+
+                $$L = -\sum_{i=1}^{10} y_i * log(\hat{y_i})$$
+            </div>
+            <img src="./img/image 2.png" alt="">
+        </div>
+        <div class="paragaph">
+            <h1 class="title">
+                Optimizer: Adam
+            </h1>
+            <div style="font-size: 2rem;">
+                $$\begin{align}
+                \begin{split}
+                m_t &= \beta_1 m_{t-1} + (1 - \beta_1) g_t \\
+                v_t &= \beta_2 v_{t-1} + (1 - \beta_2) g_t^2 \\
+                \hat{m}_t &= \dfrac{m_t}{1 - \beta^t_1} \\
+                \hat{v}_t &= \dfrac{v_t}{1 - \beta^t_2} \\
+                
+                \end{split}
+                \end{align}
+                $$
+
+                $$
+                \theta_{t+1} = \theta_{t} - \dfrac{\eta}{\sqrt{\hat{v}_t} + \epsilon}\hat{m}_t 
+                $$
+
+            </div>
+            <img src="./img/movie11.gif" alt="">
+        </div>
+        <div class="paragaph">
+            <h1 class="title">
+                Kết quả
+            </h1>
+            <img src="./img/Group 3.png" alt="">
+        </div>
+    </div>
 
 
 </body>
@@ -365,13 +452,13 @@
         // let image = document.getElementById("display_image");
         let img = tf.browser.fromPixels(image);
         console.log(img)
-      
+
         let tensor = img
             .resizeNearestNeighbor([28, 28])
             .toFloat()
             .mean(2)
             .expandDims(-1);
-            
+
         // 2. Predict
         let predictions = await model.predict(tensor.reshape([-1, 28, 28, 1]));
         predictions = predictions.dataSync();
