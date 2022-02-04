@@ -10,6 +10,8 @@ HTML, CSS, Python, TensorFlow JS
 1. Select picture or wirte in black canvas
 2. Click button 'Dự Doán'
 
+Demo: https://nxluu.github.io/mnist-dataset-demo/
+
 
 ![alt text](img/nxluu.github.io_mnist-dataset-demo_.png)
    
